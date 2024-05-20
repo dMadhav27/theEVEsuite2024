@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | theEVEsuite</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            background-image: url('https://www.hdwallpapers.in/download/geometric_squres_shapes_pattern_white_background_hd_white_background-1920x1080.jpg');
+            background-repeat: no-repeat;
+            background-size: 250vh;
+            
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #4158d0;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table, th, td {
+            border: 1px solid #e0e0e0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #4158d0;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        td {
+            background: #f9f9f9;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .strikethrough {
+            text-decoration: line-through;
+            color: #888; /* Faint color */
+        }
+
+        button {
+            background: #ff4b5c;
+            border: none;
+            padding: 10px 15px;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #ff0000;
+        }
+
+        .strike-checkbox {
+            margin-right: 10px;
+        }
+
+        form {
+            display: inline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            table, th, td {
+                font-size: 12px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h3>theEVEsuite</h3>
+    
+    <h1 style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">Admin Dashboard</h1>
+    <h2>All Registered Events</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Event ID</th>
+                    <th>Client Name</th>
+                    <th>Client Address</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Field5</th>
+                    <th>Field6</th>
+                    <th>Field7</th>
+                    <th>Location</th>
+                    <th>People</th>
+                    <th>Event Time</th>
+                    <th>Food</th>
+                    <th>Comments</th>
+                    <th>Username</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% events.forEach(event => { %>
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="strike-checkbox">
+                        </td>
+                        <td><%= event.id %></td>
+                        <td><%= event.cli_name %></td>
+                        <td><%= event.cli_address %></td>
+                        <td><%= event.email %></td>
+                        <td><%= event.phone %></td>
+                        <td><%= event.field5 %></td>
+                        <td><%= event.field6 %></td>
+                        <td><%= event.field7 %></td>
+                        <td><%= event.loc %></td>
+                        <td><%= event.ppl %></td>
+                        <td><%= event.evetime %></td>
+                        <td><%= event.food %></td>
+                        <td><%= event.cmnt %></td>
+                        <td><%= event.username %></td>
+                        <td>
+                            <form action="/admin/events/delete" method="POST" class="event-delete-form">
+                                <input type="hidden" name="eventId" value="<%= event.id %>">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        // Add JavaScript to handle checkbox click
+        document.querySelectorAll('.strike-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row.classList.add('strikethrough');
+                } else {
+                    row.classList.remove('strikethrough');
+                }
+            });
+        });
+
+        // Handle event deletion
+        document.querySelectorAll('.event-delete-form').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const row = this.closest('tr');
+                const eventId = this.querySelector('input[name="eventId"]').value;
+                fetch('/admin/events/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ eventId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        row.querySelector('td:nth-child(15)').innerHTML = `
+                            <form action="/admin/users/delete" method="POST" class="user-delete-form">
+                                <input type="hidden" name="username" value="${data.username}">
+                                <button type="submit">Delete User</button>
+                            </form>
+                        `;
+                        row.querySelectorAll('td:not(:nth-child(15))').forEach(td => td.innerHTML = '');
+                    } else {
+                        alert('Error deleting event');
+                    }
+                });
+            });
+        });
+
+        // Handle user deletion
+        document.body.addEventListener('submit', function(event) {
+            if (event.target.classList.contains('user-delete-form')) {
+                event.preventDefault();
+                const row = event.target.closest('tr');
+                const username = event.target.querySelector('input[name="username"]').value;
+                fetch('/admin/users/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        row.remove();
+                    } else {
+                        alert('Error deleting user');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

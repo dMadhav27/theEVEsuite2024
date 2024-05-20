@@ -1,0 +1,569 @@
+<!-- eve.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       
+    <!-- ===== Boxicons CSS ===== -->
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <style>/* ===== Google Font Import - Poppins ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.4s ease;;
+        }
+        
+        
+        /* ===== Colours ===== */
+        :root{
+            --body-color: #E4E9F7;
+            --nav-color: #4070F4;
+            --side-nav: #010718;
+            --text-color: #FFF;
+            --search-bar: #F2F2F2;
+            --search-text: #010718;
+        }
+        
+        body{
+            height: 100vh;
+            background-color: var(--body-color);
+            
+        }
+        
+        body.dark{
+            --body-color: #18191A;
+            --nav-color: #242526;
+            --side-nav: #242526;
+            --text-color: #CCC;
+            --search-bar: #242526;
+        }
+
+        /* Add styles for body-content and dark-content */
+body-content {
+    color: var(--search-text); /* Default text color */
+}
+
+body.dark .body-content {
+    color: #FFFFFF; /* Text color for dark mode */
+}
+        
+        nav{
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 70px;
+            width: 100%;
+            background-color: var(--nav-color);
+            z-index: 100;
+        }
+        
+        body.dark nav{
+            border: 1px solid #393838;
+        
+        }
+        
+        nav .nav-bar{
+            position: relative;
+            height: 100%;
+            max-width: 1000px;
+            width: 100%;
+            background-color: var(--nav-color);
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        nav .nav-bar .sidebarOpen{
+            color: var(--text-color);
+            font-size: 25px;
+            padding: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        
+        nav .nav-bar .logo a{
+            font-size: 25px;
+            font-weight: 500;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .menu .logo-toggle{
+            display: none;
+        }
+        
+        .nav-bar .nav-links{
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-bar .nav-links li{
+            margin: 0 5px;
+            list-style: none;
+        }
+        
+        .nav-links li a{
+            position: relative;
+            font-size: 17px;
+            font-weight: 400;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 10px;
+        }
+        
+        .nav-links li a::before{
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            height: 6px;
+            width: 6px;
+            border-radius: 50%;
+            background-color: var(--text-color);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links li:hover a::before{
+            opacity: 1;
+        }
+        
+        .nav-bar .darkLight-searchBox{
+            display: flex;
+            align-items: center;
+        }
+        
+        .darkLight-searchBox .dark-light,
+        .darkLight-searchBox .searchToggle{
+            height: 40px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+        }
+        
+        .dark-light i,
+        .searchToggle i{
+            position: absolute;
+            color: var(--text-color);
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-light i.sun{
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .dark-light.active i.sun{
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .dark-light.active i.moon{
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .searchToggle i.cancel{
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .searchToggle.active i.cancel{
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .searchToggle.active i.search{
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .searchBox{
+            position: relative;
+        }
+        
+        .searchBox .search-field{
+            position: absolute;
+            bottom: -85px;
+            right: 5px;
+            height: 50px;
+            width: 300px;
+            display: flex;
+            align-items: center;
+            background-color: var(--nav-color);
+            padding: 3px;
+            border-radius: 6px;
+            box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        
+        .searchToggle.active ~ .search-field{
+            bottom: -74px;
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .search-field::before{
+            content: '';
+            position: absolute;
+            right: 14px;
+            top: -4px;
+            height: 12px;
+            width: 12px;
+            background-color: var(--nav-color);
+            transform: rotate(-45deg);
+            z-index: -1;
+        }
+        
+        .search-field input{
+            height: 100%;
+            width: 100%;
+            padding: 0 45px 0 15px;
+            outline: none;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--search-text);
+            background-color: var(--search-bar);
+        }
+        
+        body.dark .search-field input{
+            color: var(--text-color);
+        }
+        
+        .search-field i{
+            position: absolute;
+            color: var(--nav-color);
+            right: 15px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        
+        body.dark .search-field i{
+            color: var(--text-color);
+        }
+        
+        @media (max-width: 790px) {
+            nav .nav-bar .sidebarOpen{
+                display: block;
+            }
+        
+            .menu{
+                position: fixed;
+                height: 100%;
+                width: 320px;
+                left: -100%;
+                top: 0;
+                padding: 20px;
+                background-color: var(--side-nav);
+                z-index: 100;
+                transition: all 0.4s ease;
+            }
+        
+            nav.active .menu{
+                left: -0%;
+            }
+        
+            nav.active .nav-bar .navLogo a{
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+        
+            .menu .logo-toggle{
+                display: block;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+        
+            .logo-toggle .siderbarClose{
+                color: var(--text-color);
+                font-size: 24px;
+                cursor: pointer;
+            }
+        
+            .nav-bar .nav-links{
+                flex-direction: column;
+                padding-top: 30px;
+            }
+        
+            .nav-links li a{
+                display: block;
+                margin-top: 20px;
+            }
+        }
+
+        /* form styles*/
+
+       
+.form-style-5{
+	max-width: 500px;
+	padding: 10px 20px;
+	background: #f4f7f8;
+	margin: 10px auto;
+	padding: 20px;
+	background: #f4f7f8;
+	border-radius: 8px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+.form-style-5 fieldset{
+	border: none;
+}
+.form-style-5 legend {
+	font-size: 1.4em;
+	margin-bottom: 10px;
+}
+.form-style-5 label {
+	display: block;
+	margin-bottom: 8px;
+}
+.form-style-5 input[type="text"],
+.form-style-5 input[type="evename"],
+.form-style-5 input[type="address"],
+.form-style-5 input[type="phone"],
+.form-style-5 input[type="address"],
+.form-style-5 input[type="date"],
+.form-style-5 input[type="datetime"],
+.form-style-5 input[type="email"],
+.form-style-5 input[type="number"],
+.form-style-5 input[type="search"],
+.form-style-5 input[type="time"],
+.form-style-5 input[type="url"],
+.form-style-5 textarea,
+.form-style-5 select {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	background: rgba(0, 0, 0, 0.1);
+	border: none;
+	border-radius: 4px;
+	font-size: 15px;
+	margin: 0;
+	outline: 0;
+	padding: 10px;
+	width: 100%;
+	box-sizing: border-box; 
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box; 
+	background-color: #e8eeef;
+	color:#000000;
+	-webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+	margin-bottom: 30px;
+}
+.form-style-5 input[type="text"]:focus,
+.form-style-5 input[type="address"]:focus,
+.form-style-5 input[type="date"]:focus,
+.form-style-5 input[type="datetime"]:focus,
+.form-style-5 input[type="email"]:focus,
+.form-style-5 input[type="number"]:focus,
+.form-style-5 input[type="search"]:focus,
+.form-style-5 input[type="time"]:focus,
+.form-style-5 input[type="url"]:focus,
+.form-style-5 textarea:focus,
+.form-style-5 select:focus{
+	background: #d2d9dd;
+}
+.form-style-5 select{
+	height:35px;
+}
+.form-style-5 .number {
+	background: #450470;
+	color: #fbe6ff; 
+	height: 30px;
+	width: 30px;
+	display: inline-block;
+	font-size: 0.8em;
+	margin-right: 4px;
+	line-height: 30px;
+	text-align: center;
+	border-radius: 15px 15px 15px 0px;
+}
+
+.form-style-5 input[type="submit"],
+.form-style-5 input[type="button"]
+{
+	position: relative;
+	display: block;
+	padding: 19px 39px 18px 39px;
+	color: #FFF;
+	margin: 0 auto;
+	background: #450470;
+    border-radius: 10px;
+	font-size: 18px;
+	text-align: center;
+	font-style: normal;
+	width: 100%;
+	border: 1px solid #450470;
+	border-width: 1px 1px 3px;
+	margin-bottom: 10px;
+}
+.form-style-5 input[type="submit"]:hover,
+.form-style-5 input[type="button"]:hover
+{
+	background: #450470;
+}
+
+        </style>
+    <title><%= eventDetails.name %> Details | theEVEsuite</title>
+    
+    
+</head>
+<body>
+    <center>
+
+    <nav>
+        <div class="nav-bar">
+            <i class='bx bx-menu sidebarOpen' ></i>
+            <span class="logo navLogo"><a href="/dashboard">theEVEsuite</a></span>
+            <div class="menu">
+                <div class="logo-toggle">
+                    <span class="logo"><a href="#">theEVEsuite</a></span>
+                    <i class='bx bx-x siderbarClose'></i>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="/dashboard">Home</a></li>
+                    <li><a href="/myevents">My Events</a></li>
+                    <li><a href="#about-us">About us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="darkLight-searchBox">
+                <div class="dark-light">
+                    <i class='bx bx-moon moon'></i>
+                    <i class='bx bx-sun sun'></i>
+                </div>
+                
+            </div>
+            <div class="logout-btn">
+                <div class="logout">
+                    <a href="#" onclick="confirmLogout()" style="color: white; text-decoration: none;">Logout</a>
+                </div>
+            </div>
+            <script>
+                function confirmLogout() {
+                    // Display a confirmation dialog
+                    const confirmLogout = window.confirm('Are you sure you want to logout?');
+            
+                    // If user confirms logout, redirect to the logout route
+                    if (confirmLogout) {
+                        window.location.href = '/logout'; // Redirect to the logout route
+                    }
+                }
+            </script>
+        </div>
+    </nav><br><br><br><br><br>
+
+    <div class="body-content">
+    <h1><%= eventDetails.name %> Details</h1><br>
+    <img src="<%= eventDetails.imageUrl %>" alt="<%= eventDetails.name %> Image" style="border-radius: 5px;"><br><br>
+    <h4>About this Event...</h4><br>
+
+    <p><%= eventDetails.description %></p><br><br>
+
+    <h2>Book this event now?</h2>
+    <h5>Fill up the easy form below to secure your confirmation for organizing this event with 'theEVEsuite'!</h5><br>
+</div>
+    <div class="form-style-5">
+        <form id="eventForm" action="/events/register" method="POST">
+            <fieldset>
+                <legend><span class="number">1</span> Client Info</legend>
+                <input type="text" name="name" placeholder="Your Name *" required>
+                <input type="text" name="address" placeholder="Your Address *" required>
+                <input type="email" name="email" placeholder="Your Email *" required>
+                <input type="text" name="phone" placeholder="Your Phone no. *" required>
+            </fieldset>
+            <select id="hear" name="field5">
+                <option value="facebook">through Facebook</option>
+                <option value="friend">through a Friend</option>
+                <option value="browsing">through Browsing</option>
+                <option value="other">Others...</option>
+              </select>      
+              </fieldset>
+              <fieldset>
+              <legend><span class="number">2</span> Event Booking Info</legend>
+              <label for="hear">Event date</label>
+              <input type="datetime-local" name="field6"><br><br>
+              <input type="text" name="field7" placeholder="Name of your event*" value="<%= eventDetails.name %>" readonly>
+              <label for="hear">Event location preference</label>
+              <select id="pref" name="loc">
+                  <option value="indoor">Indoor</option>
+                  <option value="outdoor">Outdoor</option>
+              </select>
+              <label for="hear">Expected no. of attendees</label>
+              <select id="pref" name="ppl">
+                  <option value="1">0-50</option>
+                  <option value="3">50-100</option>
+                  <option value="4">100-200</option>
+                  <option value="5">200-400</option>
+                  <option value="6">400-800</option>
+                  <option value="7">800-1600</option>
+                  <option value="8">1600-3200</option>
+                  </select>
+              <label for="hear">Timings of the event</label>
+              <input type="time" name="evetime">
+              <label for="hear">Want to include catering?</label>
+              <select id="catering" name="food">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+              </select>
+              <label for="hear">Any comments/instructions?</label>
+              <textarea id="cmnt" name="cmnt">
+                  </textarea>
+        <br><br><input type="submit" value="Confirm Booking!" />
+        </form>
+        </div><br><br><br><br>
+
+
+
+
+    <script>
+        const body = document.querySelector("body"),
+      nav = document.querySelector("nav"),
+      modeToggle = document.querySelector(".dark-light"),
+      sidebarOpen = document.querySelector(".sidebarOpen"),
+      siderbarClose = document.querySelector(".siderbarClose"),
+      bodyContent = document.querySelector(".body-content");
+
+let getMode = localStorage.getItem("mode");
+if(getMode && getMode === "dark-mode"){
+  body.classList.add("dark");
+  bodyContent.classList.add("dark-content");
+}
+
+// js code to toggle dark and light mode
+modeToggle.addEventListener("click" , () =>{
+  modeToggle.classList.toggle("active");
+  body.classList.toggle("dark");
+  bodyContent.classList.toggle("dark-content");
+
+  // js code to keep user selected mode even page refresh or file reopen
+  if(!body.classList.contains("dark")){
+      localStorage.setItem("mode" , "light-mode");
+  }else{
+      localStorage.setItem("mode" , "dark-mode");
+  }
+});
+
+// to clear the form
+document.getElementById('eventForm').reset();
+       
+        </script>
+</center>
+</body>
+</html>
